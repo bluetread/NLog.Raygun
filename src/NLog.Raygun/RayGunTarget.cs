@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Web.Mvc;
 using Mindscape.Raygun4Net;
 using NLog.Config;
 using NLog.Targets;
+using NLog;
 
-namespace NLog.Raygun
+namespace BlueTread.NLog.Raygun
 {
   [Target("RayGun")]
   public class RayGunTarget : TargetWithLayout
@@ -57,11 +57,6 @@ namespace NLog.Raygun
         RaygunClient raygunClient = CreateRaygunClient();
         SendMessage(raygunClient, exception, tags);
       }
-      else if (IsWebException(logEvent))
-      {
-        ExceptionContext exceptionContext = (ExceptionContext)logEvent.Parameters.First();
-        ProcessWebException(exceptionContext);
-      }
       else
       {
         string logMessage = Layout.Render(logEvent);
@@ -73,31 +68,12 @@ namespace NLog.Raygun
       }
     }
 
-    private static bool IsWebException(LogEventInfo logEvent)
-    {
-      return logEvent.Parameters.Any() && logEvent.Parameters.FirstOrDefault() != null && logEvent.Parameters.First().GetType() == typeof(ExceptionContext);
-    }
-
     private static bool IsException(LogEventInfo logEvent)
     {
-      return logEvent.Parameters.Any() && logEvent.Parameters.FirstOrDefault() != null && logEvent.Parameters.First().GetType() == typeof(Exception);
+        return logEvent.Parameters != null && logEvent.Parameters.Any() && logEvent.Parameters.FirstOrDefault() != null && logEvent.Parameters.First().GetType() == typeof(Exception);
     }
 
-    private void ProcessWebException(ExceptionContext exceptionContext)
-    {
-      Exception exception = exceptionContext.Exception;
-      List<string> tags = ExtractTagsFromException(exception);
-
-      RaygunClient raygunClient = CreateRaygunClient();
-
-      if (exceptionContext.HttpContext.Request.IsAuthenticated && UseIdentityNameAsUserId)
-      {
-        raygunClient.User = exceptionContext.HttpContext.User.Identity.Name;
-      }
-
-      SendMessage(raygunClient, exception, tags);
-    }
-
+  
     private static List<string> ExtractTagsFromException(Exception exception)
     {
       // Try and get tags off the exception data, if they exist
@@ -173,15 +149,6 @@ namespace NLog.Raygun
       try
       {
         var assembly = Assembly.GetEntryAssembly();
-        if (assembly == null)
-        {
-          var type = System.Web.HttpContext.Current.ApplicationInstance.GetType();
-          while (type != null && type.Namespace == "ASP")
-          {
-            type = type.BaseType;
-          }
-          assembly = type != null ? type.Assembly : null;
-        }
         return assembly != null ? assembly.GetName().Version.ToString() : null;
 
       }

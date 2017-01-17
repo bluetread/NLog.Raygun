@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NLog.Raygun
+namespace BlueTread.NLog.Raygun
 {
     public class RaygunException : Exception
     {

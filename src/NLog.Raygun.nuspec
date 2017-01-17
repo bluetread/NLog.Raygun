@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>BlueTread.NLog.Raygun</id>
+   <version>1.0.0</version>
+    <authors>BlueTread</authors>
+    <owners>BlueTread</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <summary>NLog Raygun Integration</summary>
+    <description>Addong for NLog to support logging exceptions to RayGun.io</description>
+    <copyright>Copyright 2017</copyright>
+    <dependencies>
+      <dependency id="Mindscape.Raygun4Net" version="5.4.1" />
+      <dependency id="NLog" version="4.4.1" />
+    </dependencies>
+  </metadata>
+  <files>
+	<file src="NLog.Raygun\bin\Release\BlueTread.NLog.Raygun.dll" target="lib\net461" />
+	<file src="NLog.Raygun\bin\Release\BlueTread.NLog.Raygun.pdb" target="lib\net461" />
+  </files>
+</package>
